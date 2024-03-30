@@ -18,41 +18,26 @@ export function MazeControls({
   row,
   col,
 }: Props) {
-  console.log(row, col, isObstacle(row, col))
+  const setObservation = (row: number, col: number) => {
+    if (isObstacle(row, col)) return
+    setAgent([row, col])
+    const observation = getObservation(row, col)
+    setObservations((s) => [...s, observation])
+  }
+
   const moveAgent = (direction: string) => {
-    console.log(direction)
     switch (direction) {
       case 'up':
-        if (!isObstacle(row - 1, col)) {
-          setAgent([row - 1, col])
-          setObservations((s) => [...s, getObservation(row - 1, col)])
-          break
-        }
-        setObservations((s) => [...s, getObservation(row, col)])
+        setObservation(row - 1, col)
         break
       case 'down':
-        if (!isObstacle(row + 1, col)) {
-          setAgent([row + 1, col])
-          setObservations((s) => [...s, getObservation(row + 1, col)])
-          break
-        }
-        setObservations((s) => [...s, getObservation(row, col)])
+        setObservation(row + 1, col)
         break
       case 'left':
-        if (!isObstacle(row, col - 1)) {
-          setAgent([row, col - 1])
-          setObservations((s) => [...s, getObservation(row, col - 1)])
-          break
-        }
-        setObservations((s) => [...s, getObservation(row, col)])
+        setObservation(row, col - 1)
         break
       case 'right':
-        if (!isObstacle(row, col + 1)) {
-          setAgent([row, col + 1])
-          setObservations((s) => [...s, getObservation(row, col + 1)])
-          break
-        }
-        setObservations((s) => [...s, getObservation(row, col)])
+        setObservation(row, col + 1)
         break
     }
   }
