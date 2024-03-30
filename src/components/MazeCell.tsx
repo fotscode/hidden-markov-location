@@ -16,13 +16,13 @@ export default function MazeCell({
 }: Props) {
   if (isObstacle) {
     return (
-      <div className='w-8 bg-gray-600 h-8 inline-block border border-black/50'>
+      <div className='w-12 bg-gray-600 h-12 inline-block border border-black/50'>
         {number}
       </div>
     )
   }
   let style = {
-    background: `hsl(100 40% ${100 - prob}%)`,
+    background: `hsl(100 40% ${100 - 90*prob}%)`,
     color: 'red',
   }
   if (isAgent) {
@@ -33,7 +33,7 @@ export default function MazeCell({
   }
   return (
     <div
-      className='w-8 bg-emerald-600 h-8 inline-block border border-black/50 p-0'
+      className='w-12 bg-emerald-600 h-12 inline-block border border-black/50 p-0'
       style={style}
     >
       {number}

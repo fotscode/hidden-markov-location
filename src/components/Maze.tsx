@@ -259,7 +259,7 @@ export default function Maze() {
     <div>
       <div className='not-content text-center mt-[1.5rem]  w-max mx-auto border border-gray-600 border-4 border-solid rounded-md'>
         {Array.from({ length: HEIGHT }, (_, i) => i).map((row) => (
-          <div className='h-8' key={row}>
+          <div className='h-12' key={row}>
             {Array.from({ length: WIDTH }, (_, i) => i).map((col) => (
               <MazeCell
                 isObstacle={isObstacle(row, col)}
