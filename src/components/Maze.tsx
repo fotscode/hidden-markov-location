@@ -9,14 +9,29 @@ const makeNxNMatrix = (n: number, value: number = 0) => {
   )
 }
 
+const getRandomNumbers = (size: number) => {
+  return Array.from({ length: Math.floor(0.4 * size) }, () => {
+    return Math.floor(Math.random() * size)
+  })
+}    
+/*
+
+[
+    4, 10, 14, 16, 17, 20, 22, 23, 25, 27, 29, 30, 31, 32, 36, 38, 39, 45, 46,
+    50, 54, 59,
+  ]
+  getRandomNumbers(WIDTH * HEIGHT)
+*/ 
+const obstacleArray = [
+  4, 10, 14, 16, 17, 20, 22, 23, 25, 27, 29, 30, 31, 32, 36, 38, 39, 45, 46,
+  50, 54, 59,
+]
 export default function Maze() {
   const WIDTH = 16
   const HEIGHT = 4
-  const ERROR = 0.2
-  const [obstacles, setObstacles] = useState([
-    4, 10, 14, 16, 17, 20, 22, 23, 25, 27, 29, 30, 31, 32, 36, 38, 39, 45, 46,
-    50, 54, 59,
-  ])
+  const ERROR = 0.02
+  const [error, setError] = useState(ERROR)
+  const [obstacles, setObstacles] = useState(obstacleArray)
   const [agent, setAgent] = useState([0, 0])
   const [observations, setObservations] = useState([] as string[])
   const [transitionMatrix, setTransitionMatrix] = useState(
@@ -67,10 +82,11 @@ export default function Maze() {
       for (let col = 0; col < WIDTH; col++) {
         const neighbours = getNeighbours(row, col)
         const numNeighbours = neighbours.length
-        const prob = numNeighbours > 0 ? 1 / numNeighbours : 0
+        const prob =  1 / (numNeighbours + 1)
         neighbours.forEach(([i, j]) => {
           transitionMatrix[i * WIDTH + j][row * WIDTH + col] = prob
         })
+        transitionMatrix[row * WIDTH + col][row * WIDTH + col] = prob
       }
     }
     setTransitionMatrix(transitionMatrix)
@@ -214,10 +230,13 @@ export default function Maze() {
 
   const obs = {} as { [key: string]: number[][] }
   useEffect(() => {
+    //setObstacles()
+    console.log(beliefState)
     fillTransitionMatrix(transitionMatrix)
     fillObservationMatrices(obs)
-
-    setAgent(getRandomAgent())
+    console.log(obs)
+    //setAgent(getRandomAgent())
+    setAgent([0,15])
   }, [])
 
   const getRandomAgent = (): [number, number] => {
@@ -279,6 +298,9 @@ export default function Maze() {
         setAgent={setAgent}
         setObservations={setObservations}
         getObservation={getObservation}
+        getRandomAgent={getRandomAgent}
+        error={error}
+        setError={setError}
         row={agent[0]}
         col={agent[1]}
       />
