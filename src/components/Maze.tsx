@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
 import MazeCell from './MazeCell'
 import { MazeControls } from './MazeControls'
+import { get } from 'http'
+
+const WIDTH = 12
+const HEIGHT = 12
+
 const makeNxNMatrix = (n: number, value: number = 0) => {
   return Array.from({ length: n }, (_, i) => i).map(() =>
     Array.from({ length: n }, (_, i) => i).map(() => {
@@ -22,13 +27,9 @@ const getRandomNumbers = (size: number) => {
   ]
   getRandomNumbers(WIDTH * HEIGHT)
 */ 
-const obstacleArray = [
-  4, 10, 14, 16, 17, 20, 22, 23, 25, 27, 29, 30, 31, 32, 36, 38, 39, 45, 46,
-  50, 54, 59,
-]
+const obstacleArray = getRandomNumbers(WIDTH * HEIGHT)
 export default function Maze() {
-  const WIDTH = 16
-  const HEIGHT = 4
+
   const ERROR = 0.02
   const [error, setError] = useState(ERROR)
   const [obstacles, setObstacles] = useState(obstacleArray)
@@ -82,11 +83,11 @@ export default function Maze() {
       for (let col = 0; col < WIDTH; col++) {
         const neighbours = getNeighbours(row, col)
         const numNeighbours = neighbours.length
-        const prob =  1 / (numNeighbours + 1)
+        const PROB =  0.25
         neighbours.forEach(([i, j]) => {
-          transitionMatrix[i * WIDTH + j][row * WIDTH + col] = prob
+          transitionMatrix[i * WIDTH + j][row * WIDTH + col] = PROB
         })
-        transitionMatrix[row * WIDTH + col][row * WIDTH + col] = prob
+        transitionMatrix[row * WIDTH + col][row * WIDTH + col] = 1 - PROB * numNeighbours
       }
     }
     setTransitionMatrix(transitionMatrix)
@@ -235,8 +236,7 @@ export default function Maze() {
     fillTransitionMatrix(transitionMatrix)
     fillObservationMatrices(obs)
     console.log(obs)
-    //setAgent(getRandomAgent())
-    setAgent([0,15])
+    setAgent(getRandomAgent())
   }, [])
 
   const getRandomAgent = (): [number, number] => {
