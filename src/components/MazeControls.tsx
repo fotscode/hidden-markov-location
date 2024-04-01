@@ -1,6 +1,8 @@
-import { Button } from '@nextui-org/react'
+import { Button, Input } from '@nextui-org/react'
 import { Dispatch, SetStateAction } from 'react'
 import { Arrow } from './arrows/Arrow'
+import { parse } from 'path'
+
 
 interface Props {
   isObstacle: (row: number, col: number) => boolean
@@ -55,6 +57,13 @@ export function MazeControls({
       setObservations((s) => [...s, getObservation(row, col)])
     }
   }
+
+  const handleErrorChange = (e) => {
+    if (e.target.value === '') {setError(0); return}
+    if (isNaN(parseInt(e.target.value)) || parseInt(e.target.value) > 99) return
+    setError(parseInt(e.target.value)/100)
+  }
+
   return (
     <section className='flex flex-row justify-center items-center mt-5'>
       <section className='flex flex-col justify-center items-center mt-5'>
@@ -97,7 +106,7 @@ export function MazeControls({
           }}
         > Kidnap
         </Button>
-
+        <Input type="number"  min="0" max="99" label="Error" value={error*100} onChange={handleErrorChange} />
       </section>
 
     </section>
