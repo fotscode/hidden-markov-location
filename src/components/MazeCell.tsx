@@ -1,4 +1,4 @@
-import {Tooltip} from "@nextui-org/react";
+import { Tooltip } from "@nextui-org/react";
 interface Props {
   isObstacle: boolean
   isAgent: boolean
@@ -24,7 +24,7 @@ export default function MazeCell({
     )
   }
   let style = {
-    background: `hsl(100 70% ${100 - 90*prob}%)`,
+    background: `hsl(100 70% ${100 - 90 * prob}%)`,
     color: 'red',
   }
   if (isAgent) {
@@ -33,16 +33,17 @@ export default function MazeCell({
       ...style,
       color: 'blue',
     }
-  } else {
-      content =  prob.toFixed(2)
-    }
-  
+  }
+
   return (
-    <div
-      className='w-12 bg-emerald-600 h-12 inline-block border border-black/50 p-0'
-      style={style}
-    >
-      {content}
-    </div>
+    <Tooltip offset={-20} color="warning" showArrow={true} content={prob.toFixed(2)} delay={100}>
+      <div
+        className='w-12 bg-emerald-600 h-12 inline-block border border-black/50 p-0'
+        style={style}
+      >
+        {content}
+      </div>
+    </Tooltip>
+
   )
 }
