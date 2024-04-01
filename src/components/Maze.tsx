@@ -316,18 +316,24 @@ export default function Maze() {
         row={agent[0]}
         col={agent[1]}
       />
-      <Button
-        isIconOnly
-        variant='light'
-        className='absolute top-0 right-0 mr-4 mt-4 p-1'
-        onClick={() => setHidden(!hidden)}
-      >
-        <SidebarIcon color={'#fff'}/>
-      </Button>
+      {hidden && (
+        <Button
+          isIconOnly
+          variant='light'
+          className='absolute top-0 right-0 mr-4 mt-4 p-1'
+          onClick={() => setHidden(!hidden)}
+        >
+          <SidebarIcon color={'#fff'} />
+        </Button>
+      )}
       <Sidebar
         observations={observations}
         hidden={hidden}
         setHidden={setHidden}
+        setAgent={setAgent}
+        getRandomAgent={getRandomAgent}
+        error={error}
+        setError={setError}
       />
     </div>
   )

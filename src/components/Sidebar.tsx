@@ -1,50 +1,86 @@
 import { Dispatch, SetStateAction } from 'react'
 import Observations from './Observations'
+import { Button, Input } from '@nextui-org/react'
+import { CloseIcon } from './CloseIcon'
 
 type SidebarProps = {
   observations: string[]
   hidden: boolean
+  setAgent: Dispatch<SetStateAction<number[]>>
   setHidden: Dispatch<SetStateAction<boolean>>
+  setError: Dispatch<SetStateAction<number>>
+  getRandomAgent: () => [number, number]
+  error: number
 }
 export default function Sidebar({
   observations,
   hidden,
+  error,
+  setError,
+  setAgent,
   setHidden,
+  getRandomAgent,
 }: SidebarProps) {
+  const handleErrorChange = (e: any) => {
+    if (e.target.value === '') {
+      setError(0)
+      return
+    }
+    if (isNaN(parseInt(e.target.value)) || parseInt(e.target.value) > 99) return
+    setError(parseInt(e.target.value) / 100)
+  }
   return (
-    <>
-      <div hidden={hidden}>
-        <section className='absolute inset-y-0 right-0 pl-10 max-w-full flex'>
-          <div className='w-screen max-w-md'>
-            <div className='h-full flex flex-col py-6 bg-white shadow-xl p-5'>
-              <div className='flex items-center justify-end px-4'>
-                <button
-                  className='text-gray-500 hover:text-gray-700 '
-                  onClick={() => setHidden(true)}
-                >
-                  <span className='sr-only'>Close</span>
-                  <svg
-                    className='h-6 w-6'
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'
-                    stroke='currentColor'
-                    aria-hidden='true'
-                  >
-                    <path
-                      stroke-linecap='round'
-                      stroke-linejoin='round'
-                      stroke-width='2'
-                      d='M6 18L18 6M6 6l12 12'
-                    ></path>
-                  </svg>
-                </button>
-              </div>
-              <Observations observations={observations} />
+    <div hidden={hidden}>
+      <section className='absolute inset-y-0 right-0 max-w-full flex m-0'>
+        <div className='w-screen max-w-md'>
+          <div className='h-full flex flex-col pt-4 bg-gray-500 bg-opacity-50 backdrop-blur-sm shadow-xl px-4 justify-between'>
+            <div className='flex items-center justify-end'>
+              <Button
+                isIconOnly
+                variant='light'
+                onClick={() => setHidden(true)}
+              >
+                <span className='sr-only'>Close</span>
+                <CloseIcon color={'#fff'}/>
+              </Button>
             </div>
+            <section className='flex flex-col justify-center items-center gap-1 mt-3'>
+              <div className='flex justify-between w-full gap-3'>
+                <Button
+                  className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full'
+                  onClick={() => {
+                    window.location.reload()
+                  }}
+                >
+                  Reset
+                </Button>
+                <Button
+                  className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full'
+                  onClick={() => {
+                    setAgent(getRandomAgent())
+                  }}
+                >
+                  Kidnap
+                </Button>
+              </div>
+              <Input
+                type='number'
+                min='0'
+                max='99'
+                label='Error'
+                value={error * 100}
+                onChange={handleErrorChange}
+                endContent={
+                  <div className='pointer-events-none flex items-center'>
+                    <span className='text-default-700 '>%</span>
+                  </div>
+                }
+              />
+            </section>
+            <Observations observations={observations} />
           </div>
-        </section>
-      </div>
-    </>
+        </div>
+      </section>
+    </div>
   )
 }
