@@ -3,8 +3,8 @@ import MazeCell from './MazeCell'
 import { MazeControls } from './MazeControls'
 import { get } from 'http'
 
-const WIDTH = 12
-const HEIGHT = 12
+const WIDTH = 16
+const HEIGHT = 4
 
 const makeNxNMatrix = (n: number, value: number = 0) => {
   return Array.from({ length: n }, (_, i) => i).map(() =>
@@ -27,7 +27,10 @@ const getRandomNumbers = (size: number) => {
   ]
   getRandomNumbers(WIDTH * HEIGHT)
 */ 
-const obstacleArray = getRandomNumbers(WIDTH * HEIGHT)
+const obstacleArray = [
+  4, 10, 14, 16, 17, 20, 22, 23, 25, 27, 29, 30, 31, 32, 36, 38, 39, 45, 46,
+  50, 54, 59,
+]
 export default function Maze() {
 
   const ERROR = 0.02
@@ -100,7 +103,7 @@ export default function Maze() {
   ): number[][] => {
     let sensorList = []
     for (let num of discrepancies) {
-      let prob = (1 - ERROR) ** (4 - num) * ERROR ** num
+      let prob = (1 - error) ** (4 - num) * error ** num
       sensorList.push(prob)
     }
     for (let row = 0; row < observationMatrix.length; row++) {
@@ -114,6 +117,10 @@ export default function Maze() {
     }
     return observationMatrix
   }
+  
+  useEffect(() => {
+    fillObservationMatrices(obs)
+  },[error])
 
   const getObservation = (row: number, col: number): string => {
     let observation = ['1', '1', '1', '1']
