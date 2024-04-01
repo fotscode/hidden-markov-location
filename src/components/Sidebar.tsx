@@ -11,7 +11,11 @@ export const Sidebar = ({ observations }) => {
   
     return (
       <div>
-        <Button onClick={toggleSidebar} />
+        <Button
+          className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'
+          onClick={toggleSidebar}
+        > Observations
+        </Button>
         {isSidebarOpen && <ObservationList observations={observations} />}
       </div>
     );
