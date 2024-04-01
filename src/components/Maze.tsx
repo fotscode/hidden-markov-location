@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react'
 import MazeCell from './MazeCell'
 import { MazeControls } from './MazeControls'
 import { get } from 'http'
+import Observations from './Observations'
+import Sidebar from './Sidebar'
+import { Button } from '@nextui-org/react'
+import SidebarIcon from './SidebarIcon'
 
 const WIDTH = 16
 const HEIGHT = 4
@@ -18,7 +22,7 @@ const getRandomNumbers = (size: number) => {
   return Array.from({ length: Math.floor(0.4 * size) }, () => {
     return Math.floor(Math.random() * size)
   })
-}    
+}
 /*
 
 [
@@ -26,14 +30,14 @@ const getRandomNumbers = (size: number) => {
     50, 54, 59,
   ]
   getRandomNumbers(WIDTH * HEIGHT)
-*/ 
+*/
 const obstacleArray = [
-  4, 10, 14, 16, 17, 20, 22, 23, 25, 27, 29, 30, 31, 32, 36, 38, 39, 45, 46,
-  50, 54, 59,
+  4, 10, 14, 16, 17, 20, 22, 23, 25, 27, 29, 30, 31, 32, 36, 38, 39, 45, 46, 50,
+  54, 59,
 ]
 export default function Maze() {
-
   const ERROR = 0.02
+  const [hidden, setHidden] = useState(true)
   const [error, setError] = useState(ERROR)
   const [obstacles, setObstacles] = useState(obstacleArray)
   const [agent, setAgent] = useState([0, 0])
@@ -86,11 +90,12 @@ export default function Maze() {
       for (let col = 0; col < WIDTH; col++) {
         const neighbours = getNeighbours(row, col)
         const numNeighbours = neighbours.length
-        const PROB =  0.25
+        const PROB = 0.25
         neighbours.forEach(([i, j]) => {
           transitionMatrix[i * WIDTH + j][row * WIDTH + col] = PROB
         })
-        transitionMatrix[row * WIDTH + col][row * WIDTH + col] = 1 - PROB * numNeighbours
+        transitionMatrix[row * WIDTH + col][row * WIDTH + col] =
+          1 - PROB * numNeighbours
       }
     }
     setTransitionMatrix(transitionMatrix)
@@ -117,10 +122,10 @@ export default function Maze() {
     }
     return observationMatrix
   }
-  
+
   useEffect(() => {
     fillObservationMatrices(obs)
-  },[error])
+  }, [error])
 
   const getObservation = (row: number, col: number): string => {
     let observation = ['1', '1', '1', '1']
@@ -311,16 +316,19 @@ export default function Maze() {
         row={agent[0]}
         col={agent[1]}
       />
-      <div className='flex flex-col justify-center mt-5 items-center'>
-        <p className='text-4xl font-bold'>Observations:</p>
-        <ul className='mt-2 w-full text-center rounded-lg bg-gray-800'>
-          {observations.map((obs, i) => (
-            <li key={i} className='text-lg p-2 border rounded-md'>
-              {obs}
-            </li>
-          ))}
-        </ul>
-      </div>
+      <Button
+        isIconOnly
+        variant='light'
+        className='absolute top-0 right-0 mr-4 mt-4 p-1'
+        onClick={() => setHidden(!hidden)}
+      >
+        <SidebarIcon color={'#fff'}/>
+      </Button>
+      <Sidebar
+        observations={observations}
+        hidden={hidden}
+        setHidden={setHidden}
+      />
     </div>
   )
 }
