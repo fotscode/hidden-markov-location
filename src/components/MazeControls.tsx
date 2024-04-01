@@ -1,16 +1,12 @@
-import { Button, Input } from '@nextui-org/react'
+import { Button } from '@nextui-org/react'
 import { Dispatch, SetStateAction } from 'react'
 import { Arrow } from './Arrow'
-import { parse } from 'path'
 
 interface Props {
   isObstacle: (row: number, col: number) => boolean
   setAgent: Dispatch<SetStateAction<number[]>>
   setObservations: Dispatch<SetStateAction<string[]>>
   getObservation: (row: number, col: number) => string
-  getRandomAgent: () => [number, number]
-  setError: Dispatch<SetStateAction<number>>
-  error: number
   row: number
   col: number
 }

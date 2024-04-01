@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
 import MazeCell from './MazeCell'
 import { MazeControls } from './MazeControls'
-import { get } from 'http'
-import Observations from './Observations'
 import Sidebar from './Sidebar'
 import { Button } from '@nextui-org/react'
 import SidebarIcon from './SidebarIcon'
@@ -287,7 +285,7 @@ export default function Maze() {
   }, [observations])
 
   return (
-    <div>
+    <div className="flex justify-center items-center h-full">
       <div className='not-content text-center mt-[1.5rem]  w-max mx-auto border border-gray-600 border-4 border-solid rounded-md'>
         {Array.from({ length: HEIGHT }, (_, i) => i).map((row) => (
           <div className='h-12' key={row}>
@@ -310,9 +308,6 @@ export default function Maze() {
         setAgent={setAgent}
         setObservations={setObservations}
         getObservation={getObservation}
-        getRandomAgent={getRandomAgent}
-        error={error}
-        setError={setError}
         row={agent[0]}
         col={agent[1]}
       />
