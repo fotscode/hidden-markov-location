@@ -285,8 +285,8 @@ export default function Maze() {
   }, [observations])
 
   return (
-    <div className="flex justify-center items-center h-full">
-      <div className='not-content text-center mt-[1.5rem]  w-max mx-auto border border-gray-600 border-4 border-solid rounded-md'>
+    <div className='flex justify-center items-center h-full'>
+      <div className='not-content text-center h-full  w-max mx-auto border border-gray-600 border-4 border-solid rounded-md'>
         {Array.from({ length: HEIGHT }, (_, i) => i).map((row) => (
           <div className='h-12' key={row}>
             {Array.from({ length: WIDTH }, (_, i) => i).map((col) => (
