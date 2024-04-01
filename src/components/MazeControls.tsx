@@ -59,9 +59,9 @@ export function MazeControls({
   }
 
   const handleErrorChange = (e) => {
-    if (e.target.value === '') {setError(0); return}
+    if (e.target.value === '') { setError(0); return }
     if (isNaN(parseInt(e.target.value)) || parseInt(e.target.value) > 99) return
-    setError(parseInt(e.target.value)/100)
+    setError(parseInt(e.target.value) / 100)
   }
 
   return (
@@ -106,7 +106,11 @@ export function MazeControls({
           }}
         > Kidnap
         </Button>
-        <Input type="number"  min="0" max="99" label="Error" value={error*100} onChange={handleErrorChange} />
+        <Input type="number" min="0" max="99" label="Error" value={error * 100} onChange={handleErrorChange} endContent={
+          <div className="pointer-events-none flex items-center">
+            <span className="text-default-700 ">%</span>
+          </div>
+        } />
       </section>
 
     </section>
