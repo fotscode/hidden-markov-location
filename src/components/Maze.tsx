@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import MazeCell from './MazeCell'
 import { MazeControls } from './MazeControls'
-import { get } from 'http'
+import { Dispatch, SetStateAction } from 'react'
+
 
 const WIDTH = 16
 const HEIGHT = 4
@@ -31,13 +32,11 @@ const obstacleArray = [
   4, 10, 14, 16, 17, 20, 22, 23, 25, 27, 29, 30, 31, 32, 36, 38, 39, 45, 46,
   50, 54, 59,
 ]
-export default function Maze() {
-
+export default function Maze({observations, setObservations}) {
   const ERROR = 0.02
   const [error, setError] = useState(ERROR)
   const [obstacles, setObstacles] = useState(obstacleArray)
   const [agent, setAgent] = useState([0, 0])
-  const [observations, setObservations] = useState([] as string[])
   const [transitionMatrix, setTransitionMatrix] = useState(
     makeNxNMatrix(HEIGHT * WIDTH, 0),
   )
@@ -94,7 +93,6 @@ export default function Maze() {
       }
     }
     setTransitionMatrix(transitionMatrix)
-    console.log('fill,', transitionMatrix)
   }
 
   const fillObservationMatrix = (
@@ -238,11 +236,8 @@ export default function Maze() {
 
   const obs = {} as { [key: string]: number[][] }
   useEffect(() => {
-    //setObstacles()
-    console.log(beliefState)
     fillTransitionMatrix(transitionMatrix)
     fillObservationMatrices(obs)
-    console.log(obs)
     setAgent(getRandomAgent())
   }, [])
 
@@ -280,7 +275,6 @@ export default function Maze() {
     })
     setBeliefState(newBeliefStateNormalized)
   }, [observations])
-
   return (
     <div>
       <div className='not-content text-center mt-[1.5rem]  w-max mx-auto border border-gray-600 border-4 border-solid rounded-md'>
@@ -311,16 +305,7 @@ export default function Maze() {
         row={agent[0]}
         col={agent[1]}
       />
-      <div className='flex flex-col justify-center mt-5 items-center'>
-        <p className='text-4xl font-bold'>Observations:</p>
-        <ul className='mt-2 w-full text-center rounded-lg bg-gray-800'>
-          {observations.map((obs, i) => (
-            <li key={i} className='text-lg p-2 border rounded-md'>
-              {obs}
-            </li>
-          ))}
-        </ul>
-      </div>
+      
     </div>
   )
 }
