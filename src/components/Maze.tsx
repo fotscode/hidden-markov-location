@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
 import MazeCell from './MazeCell'
 import { MazeControls } from './MazeControls'
-import { Dispatch, SetStateAction } from 'react'
+import { get } from 'http'
 
-
-const WIDTH = 16
-const HEIGHT = 4
+const WIDTH = 12
+const HEIGHT = 12
 
 const makeNxNMatrix = (n: number, value: number = 0) => {
   return Array.from({ length: n }, (_, i) => i).map(() =>
@@ -28,15 +27,14 @@ const getRandomNumbers = (size: number) => {
   ]
   getRandomNumbers(WIDTH * HEIGHT)
 */ 
-const obstacleArray = [
-  4, 10, 14, 16, 17, 20, 22, 23, 25, 27, 29, 30, 31, 32, 36, 38, 39, 45, 46,
-  50, 54, 59,
-]
-export default function Maze({observations, setObservations}) {
+const obstacleArray = getRandomNumbers(WIDTH * HEIGHT)
+export default function Maze() {
+
   const ERROR = 0.02
   const [error, setError] = useState(ERROR)
   const [obstacles, setObstacles] = useState(obstacleArray)
   const [agent, setAgent] = useState([0, 0])
+  const [observations, setObservations] = useState([] as string[])
   const [transitionMatrix, setTransitionMatrix] = useState(
     makeNxNMatrix(HEIGHT * WIDTH, 0),
   )
@@ -93,6 +91,7 @@ export default function Maze({observations, setObservations}) {
       }
     }
     setTransitionMatrix(transitionMatrix)
+    console.log('fill,', transitionMatrix)
   }
 
   const fillObservationMatrix = (
@@ -101,7 +100,7 @@ export default function Maze({observations, setObservations}) {
   ): number[][] => {
     let sensorList = []
     for (let num of discrepancies) {
-      let prob = (1 - error) ** (4 - num) * error ** num
+      let prob = (1 - ERROR) ** (4 - num) * ERROR ** num
       sensorList.push(prob)
     }
     for (let row = 0; row < observationMatrix.length; row++) {
@@ -115,10 +114,6 @@ export default function Maze({observations, setObservations}) {
     }
     return observationMatrix
   }
-  
-  useEffect(() => {
-    fillObservationMatrices(obs)
-  },[error])
 
   const getObservation = (row: number, col: number): string => {
     let observation = ['1', '1', '1', '1']
@@ -236,8 +231,11 @@ export default function Maze({observations, setObservations}) {
 
   const obs = {} as { [key: string]: number[][] }
   useEffect(() => {
+    //setObstacles()
+    console.log(beliefState)
     fillTransitionMatrix(transitionMatrix)
     fillObservationMatrices(obs)
+    console.log(obs)
     setAgent(getRandomAgent())
   }, [])
 
@@ -275,6 +273,7 @@ export default function Maze({observations, setObservations}) {
     })
     setBeliefState(newBeliefStateNormalized)
   }, [observations])
+
   return (
     <div>
       <div className='not-content text-center mt-[1.5rem]  w-max mx-auto border border-gray-600 border-4 border-solid rounded-md'>
@@ -305,7 +304,16 @@ export default function Maze({observations, setObservations}) {
         row={agent[0]}
         col={agent[1]}
       />
-      
+      <div className='flex flex-col justify-center mt-5 items-center'>
+        <p className='text-4xl font-bold'>Observations:</p>
+        <ul className='mt-2 w-full text-center rounded-lg bg-gray-800'>
+          {observations.map((obs, i) => (
+            <li key={i} className='text-lg p-2 border rounded-md'>
+              {obs}
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   )
 }

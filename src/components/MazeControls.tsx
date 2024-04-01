@@ -1,7 +1,7 @@
 import { Button, Input } from '@nextui-org/react'
 import { Dispatch, SetStateAction } from 'react'
 import { Arrow } from './arrows/Arrow'
-
+import { parse } from 'path'
 
 
 interface Props {
@@ -31,7 +31,7 @@ export function MazeControls({
     if (isObstacle(row, col)) return false
     setAgent([row, col])
     const observation = getObservation(row, col)
-    setObservations((s) => [observation,...s ])
+    setObservations((s) => [...s, observation])
     return true
   }
 
