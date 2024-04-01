@@ -1,6 +1,6 @@
 import { Button, Input } from '@nextui-org/react'
 import { Dispatch, SetStateAction } from 'react'
-import { Arrow } from './arrows/Arrow'
+import { Arrow } from './Arrow'
 import { parse } from 'path'
 
 
