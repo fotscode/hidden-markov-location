@@ -106,7 +106,7 @@ export default function Maze() {
   ): number[][] => {
     let sensorList = []
     for (let num of discrepancies) {
-      let prob = (1 - error) ** (4 - num) * error ** num
+      let prob = (1 - ERROR) ** (4 - num) * ERROR ** num
       sensorList.push(prob)
     }
     for (let row = 0; row < observationMatrix.length; row++) {
