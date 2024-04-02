@@ -51,8 +51,8 @@ export function MazeControls({
   }
 
   return (
-    <section className='absolute left-0 bottom-0 ml-4 mb-4 md:right-0 md:bottom-6'>
-      <section className='flex flex-col justify-center items-center mt-5'>
+    <section className='absolute w-max left-0 pl-4 pb-4 md:left-6 md:bottom-6'>
+      <section className='flex flex-col justify-center items-center'>
         <div className='flex'>
           <Button
             isIconOnly
