@@ -56,26 +56,32 @@ export function MazeControls({
         <div className='flex'>
           <Button
             isIconOnly
-            variant='ghost'
+            variant='shadow'
+            color='secondary'
             aria-label='Up arrow'
+            className='p-1'
             onClick={() => moveAgent('up')}
           >
             <Arrow direction='up' />
           </Button>
         </div>
-        <div className='flex gap-7'>
+        <div className='flex gap-9'>
           <Button
             isIconOnly
-            variant='ghost'
+            variant='shadow'
+            color='secondary'
             aria-label='Left arrow'
+            className='p-1'
             onClick={() => moveAgent('left')}
           >
             <Arrow direction='left' />
           </Button>
           <Button
             isIconOnly
-            variant='ghost'
+            variant='shadow'
+            color='secondary'
             aria-label='Right arrow'
+            className='p-1'
             onClick={() => moveAgent('right')}
           >
             <Arrow direction='right' />
@@ -84,8 +90,10 @@ export function MazeControls({
         <div className='flex'>
           <Button
             isIconOnly
-            variant='ghost'
+            variant='shadow'
+            color='secondary'
             aria-label='Down arrow'
+            className='p-1'
             onClick={() => moveAgent('down')}
           >
             <Arrow direction='down' />

@@ -48,7 +48,8 @@ export default function Sidebar({
             <section className='flex flex-col justify-center items-center gap-1 mt-3'>
               <div className='flex justify-between w-full gap-3'>
                 <Button
-                  className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full'
+                  className='w-full'
+                  color='secondary'
                   onClick={() => {
                     window.location.reload()
                   }}
@@ -56,7 +57,8 @@ export default function Sidebar({
                   Reset
                 </Button>
                 <Button
-                  className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full'
+                  className='w-full'
+                  color='secondary'
                   onClick={() => {
                     setAgent(getRandomAgent())
                   }}

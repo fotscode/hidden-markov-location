@@ -61,7 +61,7 @@ export default function MazeCell({
   return (
     <Tooltip
       offset={-20}
-      color='warning'
+      color='secondary'
       showArrow={true}
       content={prob.toFixed(2)}
       delay={100}
