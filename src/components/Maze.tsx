@@ -288,7 +288,6 @@ export default function Maze() {
     setBeliefState(newBeliefStateNormalized)
   }, [observations])
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
-    console.log('dragging')
     setDragging(true)
     setStartPosition({
       x: e.clientX - position.x,

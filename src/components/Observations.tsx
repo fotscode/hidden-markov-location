@@ -2,7 +2,6 @@ type ObservationsProps = {
   observations: string[]
 }
 export default function Observations({ observations }: ObservationsProps) {
-  console.log(observations.length === 0)
   return (
     <div className='flex flex-col justify-center my-5 items-center overflow-y-hidden h-2/6'>
       <p  hidden={observations.length === 0} className='text-3xl font-bold'>Observations</p>
