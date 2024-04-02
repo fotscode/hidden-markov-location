@@ -63,7 +63,7 @@ export default function Sidebar({
                     setAgent(getRandomAgent())
                   }}
                 >
-                  Kidnap
+                  Reposicionar
                 </Button>
               </div>
               <Input
