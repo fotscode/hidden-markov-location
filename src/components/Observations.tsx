@@ -26,7 +26,7 @@ const makeRepresentationGrid = (observation: string) => {
           <div
             key={i}
             className={`h-5 border border-gray-500 ${checkObstacle(observation, i)}`}
-          >{observation[gridToObsMap[i]]}</div>
+          >{observation[gridToObsMap[i]]}{i === 4 ? '🤖' : ""}</div>
         )
       })}
     </div>
