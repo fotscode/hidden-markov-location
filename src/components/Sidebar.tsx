@@ -34,7 +34,7 @@ export default function Sidebar({
       <section className='absolute inset-y-0 right-0 max-w-full flex m-0'>
         <div className='w-screen max-w-md bg-gray-500 bg-opacity-50 backdrop-blur-sm shadow-xl'>
           <div className='h-full flex flex-col pt-4 px-4 justify-between'>
-            <div>
+            <div className="max-h-full">
               <div className='flex items-center justify-end'>
                 <Button
                   isIconOnly
@@ -94,8 +94,8 @@ export default function Sidebar({
                   }
                 />
               </section>
+              <Observations observations={observations} />
             </div>
-            <Observations observations={observations} />
           </div>
         </div>
       </section>

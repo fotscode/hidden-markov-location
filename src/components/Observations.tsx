@@ -3,14 +3,14 @@ import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, getKey
 type ObservationsProps = {
   observations: string[]
 }
+const gridToObsMap = {
+  1: 0,
+  5: 1,
+  7: 2,
+  3: 3
+}
 
 const checkObstacle = (observation: string, i: number) => {
-  const gridToObsMap = {
-    1: 0,
-    5: 1,
-    7: 2,
-    3: 3
-  }
     if (observation[gridToObsMap[i]] == '1') {
       return 'bg-blue-500'
     } 
@@ -20,13 +20,13 @@ const checkObstacle = (observation: string, i: number) => {
 
 const makeRepresentationGrid = (observation: string) => {
   return (
-    <div className='grid grid-cols-3 grid-rows-3'>
+    <div className=' text-center text-black grid grid-cols-3 grid-rows-3'>
       {Array.from({ length: 9 }, (_, i) => i).map((i) => {
         return (
           <div
             key={i}
             className={`h-5 border border-gray-500 ${checkObstacle(observation, i)}`}
-          ></div>
+          >{observation[gridToObsMap[i]]}</div>
         )
       })}
     </div>
@@ -44,14 +44,13 @@ export default function Observations({ observations }: ObservationsProps) {
   const columns = [
     {
       key: "observation",
-      label: "Observacion",
+      label: "Observación",
     },
     {
       key: "representation",
       label: "Representación",
     }
   ]
-  //make teh table scrollable and transparent
   const classNames = {
     table: 'bg-transparent',
     header: 'bg-transparent',
@@ -60,7 +59,7 @@ export default function Observations({ observations }: ObservationsProps) {
     cell: 'bg-transparent'
   }
   return (
-    <div className='overflow-y-auto mt-2 mb-2'>
+    <div className='h-4/6 overflow-y-auto mt-2 mb-2' >
       <Table aria-label="Example table with dynamic content" removeWrapper classNames={classNames}>
         <TableHeader>
           {columns.map((column) =>
