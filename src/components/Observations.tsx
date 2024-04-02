@@ -8,17 +8,13 @@ const checkObstacle = (observation: string, i: number) => {
   const gridToObsMap = {
     1: 0,
     5: 1,
-    3: 2,
-    7: 3
+    7: 2,
+    3: 3
   }
-  console.log(observation,"||||",i)
-  console.log(observation[gridToObsMap[i]])
-
-    if (i in [1,3,5,7] && observation[gridToObsMap[i]] === '1') {
+    if (observation[gridToObsMap[i]] == '1') {
       return 'bg-blue-500'
-    } else {
-      return 'bg-gray-200'
-    }
+    } 
+    return 'bg-gray-200'
 }
 
 
