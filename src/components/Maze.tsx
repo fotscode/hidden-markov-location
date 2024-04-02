@@ -334,7 +334,7 @@ export default function Maze() {
   }
 
   return (
-    <div>
+    <>
       <div
         className='text-center h-max w-max border border-gray-600 border-4 border-solid rounded-md absolute z-index-50'
         draggable
@@ -389,6 +389,6 @@ export default function Maze() {
         error={error}
         setError={setError}
       />
-    </div>
+    </>
   )
 }
