@@ -34,6 +34,10 @@ const obstacleArray = [
   54, 59,
 ]
 export default function Maze() {
+  const [dragging, setDragging] = useState(false)
+  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [startPosition, setStartPosition] = useState({ x: 0, y: 0 })
+
   const ERROR = 0.02
   const [hidden, setHidden] = useState(true)
   const [error, setError] = useState(ERROR)
@@ -283,10 +287,65 @@ export default function Maze() {
     })
     setBeliefState(newBeliefStateNormalized)
   }, [observations])
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+    console.log('dragging')
+    setDragging(true)
+    setStartPosition({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y,
+    })
+  }
+
+  const handleDrag = (e: React.DragEvent<HTMLDivElement> ) => {
+    if (dragging) {
+      let bounded = boundXY(e)
+      setPosition({
+        x: bounded[0],
+        y: bounded[1],
+      })
+    }
+  }
+  const boundXY = (e: any): [number, number] => {
+    const newX = e.clientX - startPosition.x
+    const newY = e.clientY - startPosition.y
+
+    const windowWidth = window.innerWidth
+    const windowHeight = window.innerHeight
+
+    const elementWidth = e.target.offsetWidth
+    const elementHeight = e.target.offsetHeight
+
+    const maxX = windowWidth - elementWidth
+    const maxY = windowHeight - elementHeight
+
+    const boundedX = Math.max(0, Math.min(newX, maxX))
+    const boundedY = Math.max(0, Math.min(newY, maxY))
+
+    return [boundedX, boundedY]
+  }
+
+  const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
+    setDragging(false)
+    let bounded = boundXY(e)
+    setPosition({
+      x: bounded[0],
+      y: bounded[1],
+    })
+  }
 
   return (
-    <div className='flex justify-center items-center h-full'>
-      <div className='not-content text-center h-full  w-max mx-auto border border-gray-600 border-4 border-solid rounded-md'>
+    <div>
+      <div
+        className='text-center h-max w-max border border-gray-600 border-4 border-solid rounded-md absolute z-index-50'
+        draggable
+        onDragStart={handleDragStart}
+        onDrag={handleDrag}
+        onDragEnd={handleDragEnd}
+        style={{
+          left: position.x,
+          top: position.y,
+        }}
+      >
         {Array.from({ length: HEIGHT }, (_, i) => i).map((row) => (
           <div className='h-12' key={row}>
             {Array.from({ length: WIDTH }, (_, i) => i).map((col) => (
