@@ -18,7 +18,7 @@ export const Arrow = (props) => (
     <path
       d= {directionMap[props.direction] ? directionMap[props.direction] : directionMap["up"]}
       style={{
-        fill: "#fa0c0c",
+        fill: "#fff",
         fillOpacity: 1,
         fillRule: "evenodd",
         stroke: "none",
