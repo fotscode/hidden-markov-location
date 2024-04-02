@@ -23,7 +23,7 @@ export function MazeControls({
     if (isObstacle(row, col)) return false
     setAgent([row, col])
     const observation = getObservation(row, col)
-    setObservations((s) => [...s, observation])
+    setObservations((s) => [observation,...s ])
     return true
   }
 

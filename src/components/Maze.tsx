@@ -273,7 +273,7 @@ export default function Maze() {
 
   useEffect(() => {
     if (observations.length === 0) return
-    const obs = observations[observations.length - 1]
+    const obs = observations[0]
     let newBeliefState = multiplyMatrixByArray(
       observationMatrices[obs],
       multiplyMatrixByArray(transitionMatrix, beliefState),
