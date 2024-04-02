@@ -97,7 +97,7 @@ export default function Maze() {
       }
     }
     setTransitionMatrix(transitionMatrix)
-    console.log('fill,', transitionMatrix)
+    
   }
 
   const fillObservationMatrix = (
@@ -241,11 +241,8 @@ export default function Maze() {
 
   const obs = {} as { [key: string]: number[][] }
   useEffect(() => {
-    //setObstacles()
-    console.log(beliefState)
     fillTransitionMatrix(transitionMatrix)
     fillObservationMatrices(obs)
-    console.log(obs)
     setAgent(getRandomAgent())
   }, [])
 
