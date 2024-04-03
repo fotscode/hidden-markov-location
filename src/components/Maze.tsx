@@ -123,96 +123,45 @@ export default function Maze({ agent, setAgent, error, observations, setObservat
     fillObservationMatrices(obs)
   }, [error])
 
+  const DIRECTIONS = [
+    { row: -1, col: 0 }, // Up
+    { row: 0, col: 1 }, // Right
+    { row: 1, col: 0 }, // Down
+    { row: 0, col: -1 }, // Left
+  ];
+
   const getObservation = (row: number, col: number): string => {
-    let observation = ['1', '1', '1', '1']
-    if (row > 0 && !isObstacle(row - 1, col)) {
-      observation[0] = '0'
-    }
-    if (col < WIDTH - 1 && !isObstacle(row, col + 1)) {
-      observation[1] = '0'
-    }
-    if (row < HEIGHT - 1 && !isObstacle(row + 1, col)) {
-      observation[2] = '0'
-    }
-    if (col > 0 && !isObstacle(row, col - 1)) {
-      observation[3] = '0'
-    }
-    return observation.join('')
+    return DIRECTIONS.map(({ row: dRow, col: dCol }, i) => {
+      return isObstacle(row + dRow, col + dCol) ? '1' : '0';
+    }).join('');
   }
 
-  const getDiscrepancieOfCell = (
+  const getDiscrepancyOfCell = (
     row: number,
     col: number,
     observation: string,
   ): number => {
-    let count = 0
-    const neighbours = getNeighbours(row, col)
+    let count = 0;
     observation.split('').forEach((obs, i) => {
-      switch (obs) {
-        case '0':
-          switch (i) {
-            case 0:
-              if (isObstacle(row - 1, col)) {
-                count++
-              }
-              break
-            case 1:
-              if (isObstacle(row, col + 1)) {
-                count++
-              }
-              break
-            case 2:
-              if (isObstacle(row + 1, col)) {
-                count++
-              }
-              break
-            case 3:
-              if (isObstacle(row, col - 1)) {
-                count++
-              }
-              break
-          }
-
-          break
-        case '1':
-          switch (i) {
-            case 0:
-              if (!isObstacle(row - 1, col)) {
-                count++
-              }
-              break
-            case 1:
-              if (!isObstacle(row, col + 1)) {
-                count++
-              }
-              break
-            case 2:
-              if (!isObstacle(row + 1, col)) {
-                count++
-              }
-              break
-            case 3:
-              if (!isObstacle(row, col - 1)) {
-                count++
-              }
-              break
-          }
-
-          break
+      const { row: dRow, col: dCol } = DIRECTIONS[i];
+      const isNeighborObstacle = isObstacle(row + dRow, col + dCol);
+      if ((obs === '0' && isNeighborObstacle) || (obs === '1' && !isNeighborObstacle)) {
+        count++;
       }
-    })
-    return count
-  }
+    });
+    return count;
+  };
 
   const getDiscrepancies = (observation: string): number[] => {
     return Array.from({ length: HEIGHT * WIDTH }, (_, i) => i).map((cell) => {
-      return getDiscrepancieOfCell(
+      return getDiscrepancyOfCell(
         Math.floor(cell / WIDTH),
         cell % WIDTH,
         observation,
       )
     })
   }
+
   const fillObservationMatrices = (obs: { [key: string]: number[][] }) => {
     for (let i = 0; i < 16; i++) {
       const binaryString = i.toString(2).padStart(4, '0')
@@ -225,6 +174,7 @@ export default function Maze({ agent, setAgent, error, observations, setObservat
   }
 
   const obs = {} as { [key: string]: number[][] }
+  
   useEffect(() => {
     fillTransitionMatrix(transitionMatrix)
     fillObservationMatrices(obs)
