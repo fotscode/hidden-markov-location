@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react'
 import MazeCell from './MazeCell'
 import { MazeControls } from './MazeControls'
-import Sidebar from './Sidebar'
-import { Button } from '@nextui-org/react'
-import SidebarIcon from './SidebarIcon'
+
 
 const WIDTH = 16
 const HEIGHT = 4
@@ -15,6 +13,12 @@ const makeNxNMatrix = (n: number, value: number = 0) => {
     }),
   )
 }
+
+const isOutOfBounds = (row: number, col: number) => {
+  return row < 0 || row >= HEIGHT || col < 0 || col >= WIDTH
+}
+
+
 
 const getRandomNumbers = (size: number) => {
   return Array.from({ length: Math.floor(0.4 * size) }, () => {
@@ -33,27 +37,17 @@ const obstacleArray = [
   4, 10, 14, 16, 17, 20, 22, 23, 25, 27, 29, 30, 31, 32, 36, 38, 39, 45, 46, 50,
   54, 59,
 ]
-export default function Maze() {
+export default function Maze({ agent, setAgent, error, observations, setObservations, reposition, setReposition }) {
   const [dragging, setDragging] = useState(false)
   const [position, setPosition] = useState({ x: -1, y: -1 })
   const [startPosition, setStartPosition] = useState({ x: 0, y: 0 })
-
-  const ERROR = 0.02
-  const [hidden, setHidden] = useState(true)
-  const [error, setError] = useState(ERROR)
   const [obstacles, setObstacles] = useState(obstacleArray)
-  const [agent, setAgent] = useState([0, 0])
-  const [observations, setObservations] = useState([] as string[])
   const [transitionMatrix, setTransitionMatrix] = useState(
     makeNxNMatrix(HEIGHT * WIDTH, 0),
   )
   const [observationMatrices, setObservationMatrices] = useState(
     {} as { [key: string]: number[][] },
   )
-
-  const isOutOfBounds = (row: number, col: number) => {
-    return row < 0 || row >= HEIGHT || col < 0 || col >= WIDTH
-  }
 
   const isObstacle = (row: number, col: number) => {
     return (
@@ -101,7 +95,7 @@ export default function Maze() {
       }
     }
     setTransitionMatrix(transitionMatrix)
-    
+
   }
 
   const fillObservationMatrix = (
@@ -234,18 +228,24 @@ export default function Maze() {
   useEffect(() => {
     fillTransitionMatrix(transitionMatrix)
     fillObservationMatrices(obs)
-    setAgent(getRandomAgent())
+    setAgent(getRandomAgent(WIDTH, HEIGHT))
   }, [])
 
-  const getRandomAgent = (): [number, number] => {
-    const pos = Math.floor(Math.random() * (WIDTH * HEIGHT))
-    const x = Math.floor(pos / WIDTH)
-    const y = pos % WIDTH
+  const getRandomAgent = (width: number, height: number): [number, number] => {
+    const pos = Math.floor(Math.random() * (width * height))
+    const x = Math.floor(pos / width)
+    const y = pos % width
     if (isObstacle(x, y)) {
-      return getRandomAgent()
+      return getRandomAgent(width, height)
     }
-    return [Math.floor(pos / WIDTH), pos % WIDTH]
+    return [Math.floor(pos / width), pos % width]
   }
+  useEffect(() => {
+    if (reposition) {
+      setAgent(getRandomAgent(WIDTH, HEIGHT))
+      setReposition(false)
+    }
+  },[reposition])
 
   const multiplyMatrixByArray = (
     matrixA: number[][],
@@ -279,7 +279,7 @@ export default function Maze() {
     })
   }
 
-  const handleDrag = (e: React.DragEvent<HTMLDivElement> ) => {
+  const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
     if (dragging) {
       let bounded = boundXY(e)
       setPosition({
@@ -315,7 +315,6 @@ export default function Maze() {
       y: bounded[1],
     })
   }
-  console.log(position)
   return (
     <>
       <div
@@ -352,25 +351,6 @@ export default function Maze() {
         getObservation={getObservation}
         row={agent[0]}
         col={agent[1]}
-      />
-      {hidden && (
-        <Button
-          isIconOnly
-          variant='light'
-          className='absolute top-0 right-0 mr-4 mt-4 p-1'
-          onClick={() => setHidden(!hidden)}
-        >
-          <SidebarIcon color={'#fff'} />
-        </Button>
-      )}
-      <Sidebar
-        observations={observations}
-        hidden={hidden}
-        setHidden={setHidden}
-        setAgent={setAgent}
-        getRandomAgent={getRandomAgent}
-        error={error}
-        setError={setError}
       />
     </>
   )

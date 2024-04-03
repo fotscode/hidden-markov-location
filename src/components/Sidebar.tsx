@@ -19,7 +19,7 @@ export default function Sidebar({
   setError,
   setAgent,
   setHidden,
-  getRandomAgent,
+  setReposition,
 }: SidebarProps) {
   const handleErrorChange = (e: any) => {
     if (e.target.value === '') {
@@ -60,7 +60,7 @@ export default function Sidebar({
                     className='w-full'
                     color='secondary'
                     onClick={() => {
-                      setAgent(getRandomAgent())
+                      setReposition(true)
                     }}
                   >
                     Reposicionar
