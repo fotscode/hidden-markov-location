@@ -35,7 +35,7 @@ const obstacleArray = [
 ]
 export default function Maze() {
   const [dragging, setDragging] = useState(false)
-  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [position, setPosition] = useState({ x: -1, y: -1 })
   const [startPosition, setStartPosition] = useState({ x: 0, y: 0 })
 
   const ERROR = 0.02
@@ -146,18 +146,6 @@ export default function Maze() {
     return observation.join('')
   }
 
-  //const transitionMatrix: number[] = Array.from({ length: HEIGHT * WIDTH })
-  //const fillTranstionMatrix = (transitionMatrix: number[]) => {
-  //  for (let row = 0; row < HEIGHT; row++) {
-  //    for (let col = 0; col < WIDTH; col++) {
-  //      const neighbours = getNeighbours(row, col)
-  //      const numNeighbours = neighbours.length
-  //      prob = numNeighbours > 0 ? 1 / numNeighbours : 0
-  //      transitionMatrix[row * WIDTH + col] = prob
-  //    }
-  //  }
-  //}
-  //fillTranstionMatrix(transitionMatrix)
   const getDiscrepancieOfCell = (
     row: number,
     col: number,
@@ -165,7 +153,6 @@ export default function Maze() {
   ): number => {
     let count = 0
     const neighbours = getNeighbours(row, col)
-    //count += 4 - neighbours.length
     observation.split('').forEach((obs, i) => {
       switch (obs) {
         case '0':
@@ -328,7 +315,7 @@ export default function Maze() {
       y: bounded[1],
     })
   }
-
+  console.log(position)
   return (
     <>
       <div
@@ -338,8 +325,8 @@ export default function Maze() {
         onDrag={handleDrag}
         onDragEnd={handleDragEnd}
         style={{
-          left: position.x,
-          top: position.y,
+          left: position.x === -1 ? window.innerWidth / 4 : position.x,
+          top: position.y === -1 ? window.innerHeight / 4 : position.y,
         }}
       >
         {Array.from({ length: HEIGHT }, (_, i) => i).map((row) => (
