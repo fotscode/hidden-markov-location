@@ -18,8 +18,6 @@ const isOutOfBounds = (row: number, col: number) => {
   return row < 0 || row >= HEIGHT || col < 0 || col >= WIDTH
 }
 
-
-
 const getRandomNumbers = (size: number) => {
   return Array.from({ length: Math.floor(0.4 * size) }, () => {
     return Math.floor(Math.random() * size)
@@ -49,6 +47,36 @@ export default function Maze({ agent, setAgent, error, observations, setObservat
     {} as { [key: string]: number[][] },
   )
 
+  const DIRECTIONS = [
+    { row: -1, col: 0 }, // Up
+    { row: 0, col: 1 }, // Right
+    { row: 1, col: 0 }, // Down
+    { row: 0, col: -1 }, // Left
+  ]
+
+  useEffect(() => {
+    fillTransitionMatrix(transitionMatrix)
+    fillObservationMatrices(obs)
+    setAgent(getRandomAgent(WIDTH, HEIGHT))
+  }, [])
+
+  useEffect(() => {
+    fillObservationMatrices(obs)
+  }, [error])
+
+  useEffect(() => {
+    if (observations.length === 0) return
+    const obs = observations[0]
+    const newBeliefState = multiplyMatrixByArray(
+      observationMatrices[obs],
+      multiplyMatrixByArray(transitionMatrix, beliefState),
+      )
+    const sum = newBeliefState.reduce((acc, curr) => acc + curr, 0)
+    const newBeliefStateNormalized = newBeliefState.map((prob) => prob / sum)
+
+    setBeliefState(newBeliefStateNormalized)
+  }, [observations])
+
   const isObstacle = (row: number, col: number) => {
     return (
       obstacles.some((pos) => row * WIDTH + col === pos) ||
@@ -64,71 +92,37 @@ export default function Maze({ agent, setAgent, error, observations, setObservat
   )
 
   const getNeighbours = (row: number, col: number) => {
-    const neighbours = []
-    if (row > 0 && !isObstacle(row - 1, col)) {
-      neighbours.push([row - 1, col])
-    }
-    if (col < WIDTH - 1 && !isObstacle(row, col + 1)) {
-      neighbours.push([row, col + 1])
-    }
-    if (row < HEIGHT - 1 && !isObstacle(row + 1, col)) {
-      neighbours.push([row + 1, col])
-    }
-    if (col > 0 && !isObstacle(row, col - 1)) {
-      neighbours.push([row, col - 1])
-    }
-
-    return neighbours
+    return DIRECTIONS.map(direction => [row + direction.row, col + direction.col])
+    .filter(([newRow, newCol]) => !isOutOfBounds(newRow, newCol) && !isObstacle(newRow, newCol))
   }
 
   const fillTransitionMatrix = (transitionMatrix: number[][]) => {
+    const PROB = 0.25;
     for (let row = 0; row < HEIGHT; row++) {
       for (let col = 0; col < WIDTH; col++) {
-        const neighbours = getNeighbours(row, col)
-        const numNeighbours = neighbours.length
-        const PROB = 0.25
+        const neighbours = getNeighbours(row, col);
+        const currentCellIndex = row * WIDTH + col;
         neighbours.forEach(([i, j]) => {
-          transitionMatrix[i * WIDTH + j][row * WIDTH + col] = PROB
+          const neighbourIndex = i * WIDTH + j;
+          transitionMatrix[neighbourIndex][currentCellIndex] = PROB;
         })
-        transitionMatrix[row * WIDTH + col][row * WIDTH + col] =
-          1 - PROB * numNeighbours
+        const remainingProb = 1 - PROB * neighbours.length;
+        transitionMatrix[currentCellIndex][currentCellIndex] = remainingProb;
       }
     }
-    setTransitionMatrix(transitionMatrix)
-
+    setTransitionMatrix(transitionMatrix);
   }
 
   const fillObservationMatrix = (
     observationMatrix: number[][],
     discrepancies: number[],
   ): number[][] => {
-    let sensorList = []
-    for (let num of discrepancies) {
-      let prob = (1 - error) ** (4 - num) * error ** num
-      sensorList.push(prob)
-    }
-    for (let row = 0; row < observationMatrix.length; row++) {
-      for (let col = 0; col < observationMatrix[0].length; col++) {
-        if (row !== col) {
-          observationMatrix[row][col] = 0
-        } else {
-          observationMatrix[row][col] = sensorList[row]
-        }
-      }
-    }
-    return observationMatrix
+    const sensorList: number[] = discrepancies.map(num => (1 - error) ** (4 - num) * error ** num);
+
+    return observationMatrix.map((row, rowIndex) => 
+      row.map((_, colIndex) => rowIndex === colIndex ? sensorList[rowIndex] : 0)
+    );
   }
-
-  useEffect(() => {
-    fillObservationMatrices(obs)
-  }, [error])
-
-  const DIRECTIONS = [
-    { row: -1, col: 0 }, // Up
-    { row: 0, col: 1 }, // Right
-    { row: 1, col: 0 }, // Down
-    { row: 0, col: -1 }, // Left
-  ];
 
   const getObservation = (row: number, col: number): string => {
     return DIRECTIONS.map(({ row: dRow, col: dCol }, i) => {
@@ -161,6 +155,7 @@ export default function Maze({ agent, setAgent, error, observations, setObservat
       )
     })
   }
+  const obs = {} as { [key: string]: number[][] }
 
   const fillObservationMatrices = (obs: { [key: string]: number[][] }) => {
     for (let i = 0; i < 16; i++) {
@@ -172,14 +167,6 @@ export default function Maze({ agent, setAgent, error, observations, setObservat
     }
     setObservationMatrices(obs)
   }
-
-  const obs = {} as { [key: string]: number[][] }
-  
-  useEffect(() => {
-    fillTransitionMatrix(transitionMatrix)
-    fillObservationMatrices(obs)
-    setAgent(getRandomAgent(WIDTH, HEIGHT))
-  }, [])
 
   const getRandomAgent = (width: number, height: number): [number, number] => {
     const pos = Math.floor(Math.random() * (width * height))
@@ -195,7 +182,7 @@ export default function Maze({ agent, setAgent, error, observations, setObservat
       setAgent(getRandomAgent(WIDTH, HEIGHT))
       setReposition(false)
     }
-  },[reposition])
+  }, [reposition])
 
   const multiplyMatrixByArray = (
     matrixA: number[][],
@@ -208,19 +195,7 @@ export default function Maze({ agent, setAgent, error, observations, setObservat
     })
   }
 
-  useEffect(() => {
-    if (observations.length === 0) return
-    const obs = observations[0]
-    let newBeliefState = multiplyMatrixByArray(
-      observationMatrices[obs],
-      multiplyMatrixByArray(transitionMatrix, beliefState),
-    )
-    let sum = newBeliefState.reduce((acc, curr) => acc + curr, 0)
-    let newBeliefStateNormalized = newBeliefState.map((prob) => {
-      return prob / sum
-    })
-    setBeliefState(newBeliefStateNormalized)
-  }, [observations])
+
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     setDragging(true)
     setStartPosition({
