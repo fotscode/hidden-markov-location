@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+'use client'
+import { useEffect, useState, useLayoutEffect, useRef } from 'react'
 import MazeCell from './MazeCell'
 import { MazeControls } from './MazeControls'
-
 
 const WIDTH = 16
 const HEIGHT = 4
@@ -35,7 +35,30 @@ const obstacleArray = [
   4, 10, 14, 16, 17, 20, 22, 23, 25, 27, 29, 30, 31, 32, 36, 38, 39, 45, 46, 50,
   54, 59,
 ]
-export default function Maze({ agent, setAgent, error, observations, setObservations, reposition, setReposition }) {
+
+function useWindowSize() {
+  const [size, setSize] = useState([0, 0])
+  useLayoutEffect(() => {
+    function updateSize() {
+      setSize([window.innerWidth, window.innerHeight])
+    }
+    window.addEventListener('resize', updateSize)
+    updateSize()
+    return () => window.removeEventListener('resize', updateSize)
+  }, [])
+  return size
+}
+
+export default function Maze({
+  agent,
+  setAgent,
+  error,
+  observations,
+  setObservations,
+  reposition,
+  setReposition,
+  dimensions,
+}) {
   const [dragging, setDragging] = useState(false)
   const [position, setPosition] = useState({ x: -1, y: -1 })
   const [startPosition, setStartPosition] = useState({ x: 0, y: 0 })
@@ -70,7 +93,7 @@ export default function Maze({ agent, setAgent, error, observations, setObservat
     const newBeliefState = multiplyMatrixByArray(
       observationMatrices[obs],
       multiplyMatrixByArray(transitionMatrix, beliefState),
-      )
+    )
     const sum = newBeliefState.reduce((acc, curr) => acc + curr, 0)
     const newBeliefStateNormalized = newBeliefState.map((prob) => prob / sum)
 
@@ -92,42 +115,51 @@ export default function Maze({ agent, setAgent, error, observations, setObservat
   )
 
   const getNeighbours = (row: number, col: number) => {
-    return DIRECTIONS.map(direction => [row + direction.row, col + direction.col])
-    .filter(([newRow, newCol]) => !isOutOfBounds(newRow, newCol) && !isObstacle(newRow, newCol))
+    return DIRECTIONS.map((direction) => [
+      row + direction.row,
+      col + direction.col,
+    ]).filter(
+      ([newRow, newCol]) =>
+        !isOutOfBounds(newRow, newCol) && !isObstacle(newRow, newCol),
+    )
   }
 
   const fillTransitionMatrix = (transitionMatrix: number[][]) => {
-    const PROB = 0.25;
+    const PROB = 0.25
     for (let row = 0; row < HEIGHT; row++) {
       for (let col = 0; col < WIDTH; col++) {
-        const neighbours = getNeighbours(row, col);
-        const currentCellIndex = row * WIDTH + col;
+        const neighbours = getNeighbours(row, col)
+        const currentCellIndex = row * WIDTH + col
         neighbours.forEach(([i, j]) => {
-          const neighbourIndex = i * WIDTH + j;
-          transitionMatrix[neighbourIndex][currentCellIndex] = PROB;
+          const neighbourIndex = i * WIDTH + j
+          transitionMatrix[neighbourIndex][currentCellIndex] = PROB
         })
-        const remainingProb = 1 - PROB * neighbours.length;
-        transitionMatrix[currentCellIndex][currentCellIndex] = remainingProb;
+        const remainingProb = 1 - PROB * neighbours.length
+        transitionMatrix[currentCellIndex][currentCellIndex] = remainingProb
       }
     }
-    setTransitionMatrix(transitionMatrix);
+    setTransitionMatrix(transitionMatrix)
   }
 
   const fillObservationMatrix = (
     observationMatrix: number[][],
     discrepancies: number[],
   ): number[][] => {
-    const sensorList: number[] = discrepancies.map(num => (1 - error) ** (4 - num) * error ** num);
+    const sensorList: number[] = discrepancies.map(
+      (num) => (1 - error) ** (4 - num) * error ** num,
+    )
 
-    return observationMatrix.map((row, rowIndex) => 
-      row.map((_, colIndex) => rowIndex === colIndex ? sensorList[rowIndex] : 0)
-    );
+    return observationMatrix.map((row, rowIndex) =>
+      row.map((_, colIndex) =>
+        rowIndex === colIndex ? sensorList[rowIndex] : 0,
+      ),
+    )
   }
 
   const getObservation = (row: number, col: number): string => {
     return DIRECTIONS.map(({ row: dRow, col: dCol }, i) => {
-      return isObstacle(row + dRow, col + dCol) ? '1' : '0';
-    }).join('');
+      return isObstacle(row + dRow, col + dCol) ? '1' : '0'
+    }).join('')
   }
 
   const getDiscrepancyOfCell = (
@@ -135,16 +167,19 @@ export default function Maze({ agent, setAgent, error, observations, setObservat
     col: number,
     observation: string,
   ): number => {
-    let count = 0;
+    let count = 0
     observation.split('').forEach((obs, i) => {
-      const { row: dRow, col: dCol } = DIRECTIONS[i];
-      const isNeighborObstacle = isObstacle(row + dRow, col + dCol);
-      if ((obs === '0' && isNeighborObstacle) || (obs === '1' && !isNeighborObstacle)) {
-        count++;
+      const { row: dRow, col: dCol } = DIRECTIONS[i]
+      const isNeighborObstacle = isObstacle(row + dRow, col + dCol)
+      if (
+        (obs === '0' && isNeighborObstacle) ||
+        (obs === '1' && !isNeighborObstacle)
+      ) {
+        count++
       }
-    });
-    return count;
-  };
+    })
+    return count
+  }
 
   const getDiscrepancies = (observation: string): number[] => {
     return Array.from({ length: HEIGHT * WIDTH }, (_, i) => i).map((cell) => {
@@ -195,7 +230,6 @@ export default function Maze({ agent, setAgent, error, observations, setObservat
     })
   }
 
-
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     setDragging(true)
     setStartPosition({
@@ -240,6 +274,22 @@ export default function Maze({ agent, setAgent, error, observations, setObservat
       y: bounded[1],
     })
   }
+  const [ogWidth, setOgWidth] = useState(0)
+  const [ogHeight, setOgHeight] = useState(0)
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    setOgWidth(ref.current ? ref.current?.offsetWidth : 0)
+    setOgHeight(ref.current ? ref.current?.offsetHeight : 0)
+  }, [ref.current])
+
+  const getMazeWidth = (elemWidth: number | undefined, windowWidth: number): number | undefined=> {
+    return ogWidth > windowWidth ? windowWidth : elemWidth
+  }
+
+  const getMazeHeight = (elemHeight: number | undefined, windowHeight: number): number | undefined => {
+    return ogHeight > windowHeight ? windowHeight : elemHeight
+  }
+
   return (
     <>
       <div
@@ -248,13 +298,16 @@ export default function Maze({ agent, setAgent, error, observations, setObservat
         onDragStart={handleDragStart}
         onDrag={handleDrag}
         onDragEnd={handleDragEnd}
+        ref={ref}
         style={{
-          left: position.x === -1 ? window.innerWidth / 4 : position.x,
-          top: position.y === -1 ? window.innerHeight / 4 : position.y,
+          left: (ref.current) ? (ref.current?.offsetWidth + position.x < dimensions[0]) ? position.x : dimensions[0] - ref.current?.offsetWidth : 0, 
+          top: position.y,
+          width: getMazeWidth(ref.current?.offsetWidth, dimensions[0]),
+          height: getMazeHeight(ref.current?.offsetHeight, dimensions[1]),
         }}
       >
         {Array.from({ length: HEIGHT }, (_, i) => i).map((row) => (
-          <div className='h-12' key={row}>
+          <div className='h-12 flex' key={row}>
             {Array.from({ length: WIDTH }, (_, i) => i).map((col) => (
               <MazeCell
                 isObstacle={isObstacle(row, col)}
