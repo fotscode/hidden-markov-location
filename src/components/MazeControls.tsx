@@ -51,12 +51,12 @@ export function MazeControls({
   }
 
   return (
-    <section className='absolute w-max left-0 bottom-0 pl-4 pb-4 md:left-6 md:bottom-6'>
+    <section className='fixed w-max left-0 bottom-0 pl-4 pb-4 md:left-6 md:bottom-6'>
       <section className='flex flex-col justify-center items-center'>
         <div className='flex'>
           <Button
             isIconOnly
-            variant='shadow'
+            variant='solid'
             color='secondary'
             aria-label='Up arrow'
             className='p-1'
@@ -68,7 +68,7 @@ export function MazeControls({
         <div className='flex gap-9'>
           <Button
             isIconOnly
-            variant='shadow'
+            variant='solid'
             color='secondary'
             aria-label='Left arrow'
             className='p-1'
@@ -78,7 +78,7 @@ export function MazeControls({
           </Button>
           <Button
             isIconOnly
-            variant='shadow'
+            variant='solid'
             color='secondary'
             aria-label='Right arrow'
             className='p-1'
@@ -90,7 +90,7 @@ export function MazeControls({
         <div className='flex'>
           <Button
             isIconOnly
-            variant='shadow'
+            variant='solid'
             color='secondary'
             aria-label='Down arrow'
             className='p-1'
