@@ -59,7 +59,11 @@ export default function Observations({ observations }: ObservationsProps) {
     cell: 'bg-transparent'
   }
   return (
-    <div className='h-4/6 overflow-y-auto mt-2 mb-2' >
+    <div className='overflow-y-auto mt-2 mb-2'
+      style={{
+        height: 'calc(100vh - 150px)',
+      }}
+    >
       <Table aria-label="Example table with dynamic content" removeWrapper classNames={classNames}>
         <TableHeader>
           {columns.map((column) =>
