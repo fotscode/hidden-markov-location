@@ -128,6 +128,7 @@ export default function Maze({
     const PROB = 0.25
     for (let row = 0; row < HEIGHT; row++) {
       for (let col = 0; col < WIDTH; col++) {
+        if (isObstacle(row, col)) continue
         const neighbours = getNeighbours(row, col)
         const currentCellIndex = row * WIDTH + col
         neighbours.forEach(([i, j]) => {
